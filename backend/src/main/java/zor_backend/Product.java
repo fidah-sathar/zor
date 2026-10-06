@@ -34,6 +34,7 @@ public class Product {
         name = "product_sizes",
         joinColumns = @JoinColumn(name = "product_id")
     )
+    @OrderColumn(name = "size_order")
     @Column(name = "size")
     private List<String> sizes = new ArrayList<>();
 
