@@ -2,7 +2,7 @@ import { Link, Route, Routes, useLocation, useNavigate, useParams } from "react-
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
-const CART_API = "http://localhost:8080/api/cart";
+const CART_API = "https://zor-1108.onrender.com/api/cart";
 
 const fallbackProducts = [
   {
@@ -1719,7 +1719,7 @@ function App() {
     const loadProducts = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/products",
+          "https://zor-1108.onrender.com/api/products",
           { signal: controller.signal }
         );
 
@@ -1995,7 +1995,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/orders/from-cart/${cartId}`,
+        `https://zor-1108.onrender.com/api/orders/from-cart/${cartId}`,
         { method: "POST" }
       );
 
