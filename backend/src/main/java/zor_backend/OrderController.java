@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173", "https://zor-clothing.onrender.com"})
 public class OrderController {
 
     private final OrderRepository orderRepository;
