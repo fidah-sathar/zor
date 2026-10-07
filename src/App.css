@@ -1927,32 +1927,8 @@ img {
   background: #fffdf9;
 }
 
-.quick-view-trigger {
-  position: absolute;
-  z-index: 5;
-  left: 50%;
-  bottom: 17px;
-  transform: translate(-50%, 8px);
-  padding: 10px 14px;
-  background: rgba(244, 241, 235, 0.94);
-  color: var(--text);
-  font-family: "Inter", Arial, sans-serif;
-  font-size: 7px;
-  font-weight: 500;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-  opacity: 0;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
 
-.home-product:hover .quick-view-trigger,
-.store-product-card:hover .quick-view-trigger {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-.detail-price-row,
-.quick-view-price-row {
+.detail-price-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1963,8 +1939,7 @@ img {
   margin: 20px 0 0;
 }
 
-.detail-wishlist,
-.quick-view-save {
+.detail-wishlist {
   padding: 6px 0;
   border-bottom: 1px solid currentColor;
   color: var(--muted);
@@ -1976,9 +1951,7 @@ img {
 }
 
 .detail-wishlist:hover,
-.quick-view-save:hover,
-.detail-wishlist.active,
-.quick-view-save.active {
+.detail-wishlist.active {
   color: var(--text);
 }
 
@@ -2006,18 +1979,9 @@ img {
   transition: opacity 0.28s ease, visibility 0s linear 0s;
 }
 
-.quick-view-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .search-backdrop,
-.wishlist-backdrop,
-.quick-view-backdrop {
+.wishlist-backdrop {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -2108,7 +2072,7 @@ img {
   min-height: 105px;
   padding: 13px 0;
   display: grid;
-  grid-template-columns: 72px 1fr auto;
+  grid-template-columns: 72px 1fr;
   align-items: center;
   gap: 16px;
   border-bottom: 1px solid var(--line);
@@ -2155,14 +2119,6 @@ img {
   text-transform: none;
 }
 
-.search-quick-view {
-  padding-bottom: 4px;
-  border-bottom: 1px solid currentColor;
-  font-family: "Inter", Arial, sans-serif;
-  font-size: 7px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
 
 .search-empty {
   padding: 55px 0;
@@ -2171,106 +2127,6 @@ img {
   color: var(--muted);
 }
 
-/* QUICK VIEW */
-
-.quick-view-modal {
-  align-items: center;
-}
-
-.quick-view-card {
-  position: relative;
-  z-index: 1;
-  width: min(940px, calc(100% - 44px));
-  max-height: calc(100vh - 44px);
-  display: grid;
-  grid-template-columns: 0.92fr 1.08fr;
-  overflow: auto;
-  background: var(--bg);
-  box-shadow: 0 30px 90px rgba(41, 39, 34, 0.2);
-}
-
-.quick-view-close {
-  position: absolute;
-  z-index: 3;
-  top: 17px;
-  right: 19px;
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: rgba(244, 241, 235, 0.9);
-  font-size: 17px;
-}
-
-.quick-view-image {
-  min-height: 570px;
-  background: var(--cream);
-}
-
-.quick-view-image img {
-  width: 100%;
-  height: 100%;
-  min-height: 570px;
-  object-fit: cover;
-}
-
-.quick-view-info {
-  padding: 58px 48px 42px;
-  align-self: center;
-}
-
-.quick-view-info h2 {
-  max-width: 430px;
-  margin: 0;
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: clamp(42px, 5vw, 68px);
-  font-weight: 400;
-  line-height: 0.9;
-  letter-spacing: -0.06em;
-}
-
-.quick-view-price-row {
-  margin-top: 19px;
-  font-family: "Inter", Arial, sans-serif;
-  font-size: 11px;
-}
-
-.quick-view-description {
-  max-width: 370px;
-  margin: 28px 0 34px;
-  font-size: 10px;
-  line-height: 1.8;
-  color: var(--muted);
-}
-
-.quick-view-section {
-  margin-top: 22px;
-}
-
-.quick-view-section > span {
-  display: block;
-  margin-bottom: 10px;
-  font-family: "Inter", Arial, sans-serif;
-  font-size: 8px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.quick-view-full-link {
-  display: block;
-  width: fit-content;
-  margin: 17px auto 0;
-  padding-bottom: 4px;
-  border-bottom: 1px solid currentColor;
-  font-family: "Inter", Arial, sans-serif;
-  font-size: 7px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
 
 /* WISHLIST */
 
@@ -2426,27 +2282,6 @@ img {
   .search-result-image {
     width: 62px;
     height: 78px;
-  }
-
-  .search-quick-view {
-    display: none;
-  }
-
-  .quick-view-card {
-    width: 100%;
-    max-height: 100vh;
-    grid-template-columns: 1fr;
-    overflow-y: auto;
-  }
-
-  .quick-view-image,
-  .quick-view-image img {
-    min-height: 390px;
-    height: 390px;
-  }
-
-  .quick-view-info {
-    padding: 35px 22px 30px;
   }
 
   .wishlist-panel {

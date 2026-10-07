@@ -64,15 +64,11 @@ public class CartController {
             );
 
         for (CartItem item : cart.getItems()) {
-
             if (
                 item.getProduct().getId().equals(product.getId())
                 && item.getSize().equalsIgnoreCase(request.size())
             ) {
-                item.setQuantity(
-                    item.getQuantity() + request.quantity()
-                );
-
+                item.setQuantity(item.getQuantity() + request.quantity());
                 return cartRepository.save(cart);
             }
         }
@@ -84,7 +80,6 @@ public class CartController {
         );
 
         cart.addItem(newItem);
-
         return cartRepository.save(cart);
     }
 
@@ -104,9 +99,7 @@ public class CartController {
 
         CartItem item = cart.getItems()
             .stream()
-            .filter(cartItem ->
-                cartItem.getId().equals(itemId)
-            )
+            .filter(cartItem -> cartItem.getId().equals(itemId))
             .findFirst()
             .orElseThrow(() ->
                 new ResponseStatusException(
@@ -139,9 +132,7 @@ public class CartController {
 
         CartItem item = cart.getItems()
             .stream()
-            .filter(cartItem ->
-                cartItem.getId().equals(itemId)
-            )
+            .filter(cartItem -> cartItem.getId().equals(itemId))
             .findFirst()
             .orElseThrow(() ->
                 new ResponseStatusException(
@@ -151,7 +142,6 @@ public class CartController {
             );
 
         cart.removeItem(item);
-
         return cartRepository.save(cart);
     }
 
@@ -166,7 +156,6 @@ public class CartController {
             );
 
         cart.getItems().clear();
-
         return cartRepository.save(cart);
     }
 

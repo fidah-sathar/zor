@@ -372,7 +372,7 @@ function Footer() {
   );
 }
 
-function Home({ products, bagCount, wishlist, toggleWishlist, openQuickView, onSearch, onWishlist, onBag }) {
+function Home({ products, bagCount, wishlist, toggleWishlist, onSearch, onWishlist, onBag }) {
   const [hoveredModel, setHoveredModel] = useState(null);
   const heroRef = useRef(null);
 
@@ -519,17 +519,6 @@ function Home({ products, bagCount, wishlist, toggleWishlist, openQuickView, onS
                   }}
                 >
                   {wishlist.includes(product.id) ? "♥" : "♡"}
-                </button>
-
-                <button
-                  className="quick-view-trigger"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    openQuickView(product);
-                  }}
-                >
-                  Quick view
                 </button>
 
                 <span className="home-product-view">
@@ -688,7 +677,7 @@ function Home({ products, bagCount, wishlist, toggleWishlist, openQuickView, onS
   );
 }
 
-function Shop({ products, bagCount, wishlist, toggleWishlist, openQuickView, onSearch, onWishlist, onBag }) {
+function Shop({ products, bagCount, wishlist, toggleWishlist, onSearch, onWishlist, onBag }) {
   const { category: categorySlug } = useParams();
   const [sort, setSort] = useState("FEATURED");
 
@@ -824,17 +813,6 @@ function Shop({ products, bagCount, wishlist, toggleWishlist, openQuickView, onS
                   }}
                 >
                   {wishlist.includes(product.id) ? "♥" : "♡"}
-                </button>
-
-                <button
-                  className="quick-view-trigger"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    openQuickView(product);
-                  }}
-                >
-                  Quick view
                 </button>
 
                 <span className="product-view">
@@ -1347,7 +1325,7 @@ function BagDrawer({
   );
 }
 
-function SearchOverlay({ open, onClose, products, openQuickView }) {
+function SearchOverlay({ open, onClose, products }) {
   const [query, setQuery] = useState("");
 
   useEffect(() => {
@@ -1410,114 +1388,9 @@ function SearchOverlay({ open, onClose, products, openQuickView }) {
                   </Link>
                   <small>{product.color} · ₹{product.price}</small>
                 </div>
-
-                <button
-                  className="search-quick-view"
-                  onClick={() => {
-                    onClose();
-                    openQuickView(product);
-                  }}
-                >
-                  Quick view ↗
-                </button>
               </div>
             ))
           )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function QuickView({ product, onClose, addToBag, wishlist, toggleWishlist }) {
-  const [size, setSize] = useState(product?.sizes[0] || "");
-  const [quantity, setQuantity] = useState(1);
-
-  useEffect(() => {
-    if (product) {
-      setSize(product.sizes[0]);
-      setQuantity(1);
-    }
-  }, [product]);
-
-  useEffect(() => {
-    if (!product) return;
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [product, onClose]);
-
-  if (!product) return null;
-
-  const handleAdd = async () => {
-    const added = await addToBag({ ...product, selectedSize: size, quantity });
-    if (added) {
-      onClose();
-    }
-  };
-
-  return (
-    <div className="quick-view-modal" role="dialog" aria-modal="true">
-      <button className="quick-view-backdrop" onClick={onClose} aria-label="Close quick view" />
-
-      <div className="quick-view-card">
-        <button className="quick-view-close" onClick={onClose}>×</button>
-
-        <div className="quick-view-image">
-          <img src={product.image} alt={product.name} />
-        </div>
-
-        <div className="quick-view-info">
-          <span className="eyebrow">{product.category}</span>
-          <h2>{product.name}</h2>
-          <div className="quick-view-price-row">
-            <span>₹{product.price}</span>
-            <button
-              className={`quick-view-save ${wishlist.includes(product.id) ? "active" : ""}`}
-              onClick={() => toggleWishlist(product.id)}
-            >
-              {wishlist.includes(product.id) ? "♥ Saved" : "♡ Save"}
-            </button>
-          </div>
-
-          <p className="quick-view-description">
-            {product.description ||
-              "A relaxed everyday piece designed with a clean silhouette and easy proportions."}
-          </p>
-
-          <div className="quick-view-section">
-            <span>Size</span>
-            <div className="size-options">
-              {product.sizes.map((item) => (
-                <button
-                  key={item}
-                  className={size === item ? "active" : ""}
-                  onClick={() => setSize(item)}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="quick-view-section">
-            <span>Quantity</span>
-            <div className="quantity-control">
-              <button onClick={() => setQuantity((current) => Math.max(1, current - 1))}>−</button>
-              <span>{quantity}</span>
-              <button onClick={() => setQuantity((current) => current + 1)}>+</button>
-            </div>
-          </div>
-
-          <button className="add-to-bag" onClick={handleAdd}>
-            Add to bag · ₹{product.price * quantity}
-          </button>
-
-          <Link to={`/product/${product.id}`} className="quick-view-full-link" onClick={onClose}>
-            View full piece ↗
-          </Link>
         </div>
       </div>
     </div>
@@ -1734,7 +1607,6 @@ function App() {
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [wishlistOpen, setWishlistOpen] = useState(false);
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [bagOpen, setBagOpen] = useState(false);
 
   const [recentlyViewed, setRecentlyViewed] = useState(() => {
@@ -2103,7 +1975,6 @@ function App() {
     setSearchOpen(false);
     setWishlistOpen(false);
     setBagOpen(false);
-    setQuickViewProduct(null);
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [location.pathname]);
 
@@ -2118,8 +1989,7 @@ function App() {
       setSearchOpen(false);
       setWishlistOpen(false);
       setBagOpen(false);
-      setQuickViewProduct(null);
-    };
+      };
 
     document.addEventListener("click", handleInternalNavigation);
     return () => document.removeEventListener("click", handleInternalNavigation);
@@ -2136,7 +2006,6 @@ function App() {
               bagCount={bagCount}
               wishlist={wishlist}
               toggleWishlist={toggleWishlist}
-              openQuickView={setQuickViewProduct}
               onSearch={openSearch}
               onWishlist={openWishlist}
               onBag={openBag}
@@ -2152,7 +2021,6 @@ function App() {
               bagCount={bagCount}
               wishlist={wishlist}
               toggleWishlist={toggleWishlist}
-              openQuickView={setQuickViewProduct}
               onSearch={openSearch}
               onWishlist={openWishlist}
               onBag={openBag}
@@ -2168,7 +2036,6 @@ function App() {
               bagCount={bagCount}
               wishlist={wishlist}
               toggleWishlist={toggleWishlist}
-              openQuickView={setQuickViewProduct}
               onSearch={openSearch}
               onWishlist={openWishlist}
               onBag={openBag}
@@ -2238,7 +2105,6 @@ function App() {
               bagCount={bagCount}
               wishlist={wishlist}
               toggleWishlist={toggleWishlist}
-              openQuickView={setQuickViewProduct}
               onSearch={openSearch}
               onWishlist={openWishlist}
               onBag={openBag}
@@ -2263,15 +2129,6 @@ function App() {
         open={searchOpen}
         onClose={() => setSearchOpen(false)}
         products={products}
-        openQuickView={setQuickViewProduct}
-      />
-
-      <QuickView
-        product={quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-        addToBag={addToBag}
-        wishlist={wishlist}
-        toggleWishlist={toggleWishlist}
       />
 
       <WishlistOverlay
