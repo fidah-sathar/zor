@@ -44,7 +44,7 @@ img {
 
 .shop-nav {
   position: relative;
-  z-index: 100;
+  z-index: 600;
   width: 100%;
   height: 74px;
   padding: 0 38px;
@@ -1237,6 +1237,7 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
 }
 
 .product-detail-info {
@@ -1703,6 +1704,16 @@ img {
     margin-top: 4px;
   }
 
+  .product-detail-image {
+    aspect-ratio: 0.82;
+    max-height: 72vh;
+  }
+
+  .product-detail-image img {
+    object-fit: cover;
+    object-position: center top;
+  }
+
   .product-detail-info h1 {
     font-size: 43px;
   }
@@ -1974,7 +1985,6 @@ img {
 /* SEARCH */
 
 .search-overlay,
-.quick-view-modal,
 .wishlist-overlay {
   position: fixed;
   inset: 0;
@@ -1982,11 +1992,32 @@ img {
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.28s ease, visibility 0s linear 0.42s;
+}
+
+.search-overlay.is-open,
+.wishlist-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.28s ease, visibility 0s linear 0s;
+}
+
+.quick-view-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .search-backdrop,
-.quick-view-backdrop,
-.wishlist-backdrop {
+.wishlist-backdrop,
+.quick-view-backdrop {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -2004,6 +2035,13 @@ img {
   overflow: auto;
   background: var(--bg);
   box-shadow: 0 25px 70px rgba(41, 39, 34, 0.15);
+  transform: translateY(110%);
+  transition: transform 0.46s cubic-bezier(0.2, 0.78, 0.2, 1);
+  will-change: transform;
+}
+
+.search-overlay.is-open .search-panel {
+  transform: translateY(0);
 }
 
 .search-topline,
@@ -2249,6 +2287,13 @@ img {
   padding: 32px;
   background: var(--bg);
   box-shadow: -20px 0 60px rgba(41, 39, 34, 0.12);
+  transform: translateX(105%);
+  transition: transform 0.46s cubic-bezier(0.2, 0.78, 0.2, 1);
+  will-change: transform;
+}
+
+.wishlist-overlay.is-open .wishlist-panel {
+  transform: translateX(0);
 }
 
 .wishlist-header {
@@ -2435,6 +2480,17 @@ img {
   z-index: 500;
   display: flex;
   justify-content: flex-end;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.28s ease, visibility 0s linear 0.42s;
+}
+
+.bag-drawer-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.28s ease, visibility 0s linear 0s;
 }
 
 .bag-drawer-backdrop {
@@ -2444,7 +2500,6 @@ img {
   height: 100%;
   background: rgba(41, 39, 34, 0.2);
   cursor: default;
-  animation: drawerFadeIn 0.25s ease both;
 }
 
 .bag-drawer {
@@ -2457,7 +2512,13 @@ img {
   flex-direction: column;
   background: var(--bg);
   box-shadow: -20px 0 60px rgba(41, 39, 34, 0.1);
-  animation: drawerSlideIn 0.42s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+  transform: translateX(105%);
+  transition: transform 0.46s cubic-bezier(0.2, 0.78, 0.2, 1);
+  will-change: transform;
+}
+
+.bag-drawer-overlay.is-open .bag-drawer {
+  transform: translateX(0);
 }
 
 .bag-drawer-header {
@@ -2663,6 +2724,20 @@ img {
 }
 
 @media (max-width: 700px) {
+  .search-panel {
+    margin-top: 82px;
+    max-height: calc(100vh - 165px);
+  }
+
+  .search-results {
+    padding-bottom: 92px;
+  }
+
+  .wishlist-panel,
+  .bag-drawer {
+    padding-bottom: 100px;
+  }
+
   .bag-drawer {
     width: 100%;
     padding: 24px 22px 20px;
@@ -2696,7 +2771,113 @@ img {
 }
 
 
-/* CHECKOUT + ORDER CONFIRMATION */
+/* =========================================================
+   FLOATING QUICK NAVIGATION
+   ========================================================= */
+
+.mobile-bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  z-index: 900;
+  width: min(420px, calc(100vw - 32px));
+  height: 64px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.12));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.16),
+    0 14px 38px rgba(35, 32, 28, 0.16);
+  backdrop-filter: blur(20px) saturate(175%);
+  -webkit-backdrop-filter: blur(20px) saturate(175%);
+}
+
+.mobile-bottom-nav::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent 45%);
+}
+
+.mobile-bottom-nav-item {
+  position: relative;
+  z-index: 1;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 54px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #171614;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-bottom-nav-item:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.mobile-bottom-nav-item svg {
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mobile-bottom-nav-badge {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #171614;
+  color: #fff;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 8px;
+  line-height: 1;
+}
+
+@media (max-width: 700px) {
+  .mobile-bottom-nav {
+    bottom: 14px;
+    width: calc(100vw - 28px);
+    height: 62px;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .mobile-bottom-nav {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+
+/* =========================================================
+   CHECKOUT + ORDER CONFIRMATION
+   ========================================================= */
 .checkout-page {
   padding: 76px 42px 100px;
 }
@@ -2927,7 +3108,11 @@ img {
 
 @media (max-width: 800px) {
   .checkout-page {
-    padding: 55px 20px 70px;
+    padding: 55px 20px 120px;
+  }
+
+  .checkout-heading h1 {
+    font-size: clamp(48px, 14vw, 72px);
   }
 
   .checkout-layout {
@@ -2948,6 +3133,6 @@ img {
   }
 
   .order-success {
-    padding: 80px 20px;
+    padding: 80px 20px 120px;
   }
 }

@@ -2,7 +2,15 @@ import { Link, Route, Routes, useLocation, useNavigate, useParams } from "react-
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
-const CART_API = "https://zor-1108.onrender.com/api/cart";
+const API_BASE =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://localhost:8080"
+    : "https://zor-1108.onrender.com";
+
+const PRODUCTS_API = `${API_BASE}/api/products`;
+const CART_API = `${API_BASE}/api/cart`;
+const ORDERS_API = `${API_BASE}/api/orders`;
 
 const fallbackProducts = [
   {
@@ -289,19 +297,36 @@ function Navbar({ bagCount, wishlistCount, onSearch, onWishlist, onBag }) {
         ZOR
       </Link>
 
-      <div className="shop-nav-right">
-        <button className="nav-action" onClick={onSearch}>
-          Search
+      <nav className="mobile-bottom-nav" aria-label="Quick navigation">
+        <Link to="/" className="mobile-bottom-nav-item" aria-label="Home">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3.5 10.8 12 3.8l8.5 7v9.1a1.3 1.3 0 0 1-1.3 1.3H4.8a1.3 1.3 0 0 1-1.3-1.3z" />
+            <path d="M9 21.2v-6.1h6v6.1" />
+          </svg>
+        </Link>
+
+        <button className="mobile-bottom-nav-item" onClick={onSearch} aria-label="Search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="10.8" cy="10.8" r="6.7" />
+            <path d="m16 16 5 5" />
+          </svg>
         </button>
 
-        <button className="nav-action nav-wishlist" onClick={onWishlist}>
-          Wishlist ({wishlistCount})
+        <button className="mobile-bottom-nav-item mobile-bottom-nav-heart" onClick={onWishlist} aria-label="Wishlist">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.8 8.8c0 5.1-8.8 10-8.8 10s-8.8-4.9-8.8-10A4.7 4.7 0 0 1 12 6.1a4.7 4.7 0 0 1 8.8 2.7Z" />
+          </svg>
+          {wishlistCount > 0 && <span className="mobile-bottom-nav-badge">{wishlistCount}</span>}
         </button>
 
-        <button className="nav-action nav-bag" onClick={onBag}>
-          Bag ({bagCount})
+        <button className="mobile-bottom-nav-item mobile-bottom-nav-bag" onClick={onBag} aria-label="Bag">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 8.5h14l-1 12H6z" />
+            <path d="M9 8.5V6a3 3 0 0 1 6 0v2.5" />
+          </svg>
+          {bagCount > 0 && <span className="mobile-bottom-nav-badge">{bagCount}</span>}
         </button>
-      </div>
+      </nav>
     </header>
   );
 }
@@ -481,7 +506,6 @@ function Home({ products, bagCount, wishlist, toggleWishlist, openQuickView, onS
                 <img src={product.image} alt={product.name} />
 
                 <div className="home-product-topline">
-                  <span>0{index + 1} / 04</span>
                   <span>{product.category}</span>
                 </div>
 
@@ -851,7 +875,10 @@ function ProductPage({ products, addToBag, bagCount, wishlist, toggleWishlist, o
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
     if (!product) return;
+
     setRecentlyViewed((current) => [
       product.id,
       ...current.filter((item) => item !== product.id),
@@ -875,14 +902,16 @@ function ProductPage({ products, addToBag, bagCount, wishlist, toggleWishlist, o
     .map((item) => products.find((entry) => entry.id === item))
     .filter(Boolean);
 
-  const handleAdd = () => {
-    addToBag({
+  const handleAdd = async () => {
+    const added = await addToBag({
       ...product,
       selectedSize: size,
       quantity,
     });
 
-    navigate("/bag");
+    if (added) {
+      navigate("/bag");
+    }
   };
 
   return (
@@ -1195,10 +1224,8 @@ function BagDrawer({
       window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
-  if (!open) return null;
-
   return (
-    <div className="bag-drawer-overlay" role="dialog" aria-modal="true">
+    <div className={`bag-drawer-overlay ${open ? "is-open" : ""}`} role="dialog" aria-modal="true" aria-hidden={!open}>
       <button
         className="bag-drawer-backdrop"
         onClick={onClose}
@@ -1337,8 +1364,6 @@ function SearchOverlay({ open, onClose, products, openQuickView }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
-  if (!open) return null;
-
   const normalized = query.trim().toLowerCase();
   const results = normalized
     ? products.filter((product) =>
@@ -1349,7 +1374,7 @@ function SearchOverlay({ open, onClose, products, openQuickView }) {
     : products.slice(0, 6);
 
   return (
-    <div className="search-overlay" role="dialog" aria-modal="true">
+    <div className={`search-overlay ${open ? "is-open" : ""}`} role="dialog" aria-modal="true" aria-hidden={!open}>
       <button className="search-backdrop" onClick={onClose} aria-label="Close search" />
 
       <div className="search-panel">
@@ -1426,9 +1451,11 @@ function QuickView({ product, onClose, addToBag, wishlist, toggleWishlist }) {
 
   if (!product) return null;
 
-  const handleAdd = () => {
-    addToBag({ ...product, selectedSize: size, quantity });
-    onClose();
+  const handleAdd = async () => {
+    const added = await addToBag({ ...product, selectedSize: size, quantity });
+    if (added) {
+      onClose();
+    }
   };
 
   return (
@@ -1498,12 +1525,10 @@ function QuickView({ product, onClose, addToBag, wishlist, toggleWishlist }) {
 }
 
 function WishlistOverlay({ open, onClose, wishlist, products, toggleWishlist }) {
-  if (!open) return null;
-
   const savedProducts = products.filter((product) => wishlist.includes(product.id));
 
   return (
-    <div className="wishlist-overlay" role="dialog" aria-modal="true">
+    <div className={`wishlist-overlay ${open ? "is-open" : ""}`} role="dialog" aria-modal="true" aria-hidden={!open}>
       <button className="wishlist-backdrop" onClick={onClose} aria-label="Close wishlist" />
 
       <aside className="wishlist-panel">
@@ -1683,11 +1708,20 @@ function OrderSuccess() {
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [products, setProducts] = useState(fallbackProducts);
   const [bag, setBag] = useState([]);
   const [cartId, setCartId] = useState(() => {
     const savedCartId = localStorage.getItem("zor-cart-id");
-    return savedCartId ? Number(savedCartId) : null;
+    const savedCartApi = localStorage.getItem("zor-cart-api-base");
+
+    if (savedCartId && savedCartApi === API_BASE) {
+      return Number(savedCartId);
+    }
+
+    localStorage.removeItem("zor-cart-id");
+    localStorage.setItem("zor-cart-api-base", API_BASE);
+    return null;
   });
 
   const [wishlist, setWishlist] = useState(() => {
@@ -1719,7 +1753,7 @@ function App() {
     const loadProducts = async () => {
       try {
         const response = await fetch(
-          "https://zor-1108.onrender.com/api/products",
+          PRODUCTS_API,
           { signal: controller.signal }
         );
 
@@ -1787,36 +1821,26 @@ function App() {
     let cancelled = false;
 
     const loadCart = async () => {
-      try {
-        let activeCartId = cartId;
-
-        if (!activeCartId) {
-          const createResponse = await fetch(CART_API, {
-            method: "POST",
-          });
-
-          if (!createResponse.ok) {
-            throw new Error(
-              `Cart creation failed with ${createResponse.status}`
-            );
-          }
-
-          const createdCart = await createResponse.json();
-          activeCartId = createdCart.id;
-
-          localStorage.setItem(
-            "zor-cart-id",
-            String(activeCartId)
-          );
-
-          if (!cancelled) {
-            setCartId(activeCartId);
-          }
+      // No saved cart means there is nothing to load yet.
+      // A fresh cart is created only when the user adds a product.
+      if (!cartId) {
+        if (!cancelled) {
+          setBag([]);
         }
+        return;
+      }
 
-        const response = await fetch(
-          `${CART_API}/${activeCartId}`
-        );
+      try {
+        const response = await fetch(`${CART_API}/${cartId}`);
+
+        if (response.status === 404) {
+          localStorage.removeItem("zor-cart-id");
+          if (!cancelled) {
+            setCartId(null);
+            setBag([]);
+          }
+          return;
+        }
 
         if (!response.ok) {
           throw new Error(
@@ -1877,29 +1901,36 @@ function App() {
     try {
       let activeCartId = cartId;
 
-      if (!activeCartId) {
+      const createFreshCart = async () => {
         const createResponse = await fetch(CART_API, {
           method: "POST",
         });
 
         if (!createResponse.ok) {
-          throw new Error("Could not create cart");
+          throw new Error(
+            `Cart creation failed with ${createResponse.status}`
+          );
         }
 
         const createdCart = await createResponse.json();
-        activeCartId = createdCart.id;
+        const newCartId = Number(createdCart.id);
 
         localStorage.setItem(
           "zor-cart-id",
-          String(activeCartId)
+          String(newCartId)
         );
+        localStorage.setItem("zor-cart-api-base", API_BASE);
+        setCartId(newCartId);
 
-        setCartId(activeCartId);
+        return newCartId;
+      };
+
+      if (!activeCartId) {
+        activeCartId = await createFreshCart();
       }
 
-      const response = await fetch(
-        `${CART_API}/${activeCartId}/items`,
-        {
+      const makeAddRequest = (cart) =>
+        fetch(`${CART_API}/${cart}/items`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1909,8 +1940,19 @@ function App() {
             size: item.selectedSize,
             quantity: item.quantity,
           }),
-        }
-      );
+        });
+
+      let response = await makeAddRequest(activeCartId);
+
+      // Recover automatically when an old cart ID is no longer valid.
+      if (response.status === 404) {
+        localStorage.removeItem("zor-cart-id");
+        setCartId(null);
+        setBag([]);
+
+        activeCartId = await createFreshCart();
+        response = await makeAddRequest(activeCartId);
+      }
 
       if (!response.ok) {
         throw new Error(
@@ -1920,8 +1962,10 @@ function App() {
 
       const updatedCart = await response.json();
       saveCart(updatedCart);
+      return true;
     } catch (error) {
       console.error("Could not add item to ZOR cart:", error);
+      return false;
     }
   };
 
@@ -1995,7 +2039,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `https://zor-1108.onrender.com/api/orders/from-cart/${cartId}`,
+        `${ORDERS_API}/from-cart/${cartId}`,
         { method: "POST" }
       );
 
@@ -2013,6 +2057,11 @@ function App() {
         const clearedCart = await clearResponse.json();
         saveCart(clearedCart);
       }
+
+      localStorage.removeItem("zor-cart-id");
+      localStorage.setItem("zor-cart-api-base", API_BASE);
+      setCartId(null);
+      setBag([]);
 
       setPlacingOrder(false);
       return order;
@@ -2032,10 +2081,49 @@ function App() {
     }
   };
 
+  const openSearch = () => {
+    setWishlistOpen(false);
+    setBagOpen(false);
+    setSearchOpen(true);
+  };
+
   const openWishlist = () => {
     setSearchOpen(false);
+    setBagOpen(false);
     setWishlistOpen(true);
   };
+
+  const openBag = () => {
+    setSearchOpen(false);
+    setWishlistOpen(false);
+    setBagOpen(true);
+  };
+
+  useEffect(() => {
+    setSearchOpen(false);
+    setWishlistOpen(false);
+    setBagOpen(false);
+    setQuickViewProduct(null);
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleInternalNavigation = (event) => {
+      const anchor = event.target.closest?.("a[href]");
+      if (!anchor) return;
+
+      const href = anchor.getAttribute("href");
+      if (!href || !href.startsWith("/")) return;
+
+      setSearchOpen(false);
+      setWishlistOpen(false);
+      setBagOpen(false);
+      setQuickViewProduct(null);
+    };
+
+    document.addEventListener("click", handleInternalNavigation);
+    return () => document.removeEventListener("click", handleInternalNavigation);
+  }, []);
 
   return (
     <>
@@ -2049,9 +2137,9 @@ function App() {
               wishlist={wishlist}
               toggleWishlist={toggleWishlist}
               openQuickView={setQuickViewProduct}
-              onSearch={() => setSearchOpen(true)}
+              onSearch={openSearch}
               onWishlist={openWishlist}
-              onBag={() => setBagOpen(true)}
+              onBag={openBag}
             />
           }
         />
@@ -2065,9 +2153,9 @@ function App() {
               wishlist={wishlist}
               toggleWishlist={toggleWishlist}
               openQuickView={setQuickViewProduct}
-              onSearch={() => setSearchOpen(true)}
+              onSearch={openSearch}
               onWishlist={openWishlist}
-              onBag={() => setBagOpen(true)}
+              onBag={openBag}
             />
           }
         />
@@ -2081,9 +2169,9 @@ function App() {
               wishlist={wishlist}
               toggleWishlist={toggleWishlist}
               openQuickView={setQuickViewProduct}
-              onSearch={() => setSearchOpen(true)}
+              onSearch={openSearch}
               onWishlist={openWishlist}
-              onBag={() => setBagOpen(true)}
+              onBag={openBag}
             />
           }
         />
@@ -2097,9 +2185,9 @@ function App() {
               bagCount={bagCount}
               wishlist={wishlist}
               toggleWishlist={toggleWishlist}
-              onSearch={() => setSearchOpen(true)}
+              onSearch={openSearch}
               onWishlist={openWishlist}
-              onBag={() => setBagOpen(true)}
+              onBag={openBag}
               recentlyViewed={recentlyViewed}
               setRecentlyViewed={setRecentlyViewed}
             />
@@ -2112,9 +2200,9 @@ function App() {
             <Checkout
               bag={bag}
               wishlist={wishlist}
-              onSearch={() => setSearchOpen(true)}
+              onSearch={openSearch}
               onWishlist={openWishlist}
-              onBag={() => setBagOpen(true)}
+              onBag={openBag}
               onPlaceOrder={handlePlaceOrder}
               placingOrder={placingOrder}
             />
@@ -2132,9 +2220,9 @@ function App() {
             <Bag
               bag={bag}
               wishlist={wishlist}
-              onSearch={() => setSearchOpen(true)}
+              onSearch={openSearch}
               onWishlist={openWishlist}
-              onBag={() => setBagOpen(true)}
+              onBag={openBag}
               onUpdateQuantity={updateCartQuantity}
               onRemoveItem={removeCartItem}
               onCheckout={() => navigate("/checkout")}
@@ -2151,9 +2239,9 @@ function App() {
               wishlist={wishlist}
               toggleWishlist={toggleWishlist}
               openQuickView={setQuickViewProduct}
-              onSearch={() => setSearchOpen(true)}
+              onSearch={openSearch}
               onWishlist={openWishlist}
-              onBag={() => setBagOpen(true)}
+              onBag={openBag}
             />
           }
         />
