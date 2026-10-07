@@ -2,11 +2,16 @@
 
 ## Contemporary Menswear E-commerce
 
-ZOR is a full-stack contemporary menswear e-commerce web application built as a portfolio project. It combines a React frontend with a Java Spring Boot backend, Hibernate/JPA, and MySQL for persistent product, cart, and order data.
+ZOR is a full-stack contemporary menswear e-commerce web application built as a portfolio project. It combines a React frontend with a Java Spring Boot backend, Hibernate/JPA, and MySQL to deliver a complete product browsing, shopping bag, checkout, and order workflow.
+
+## Live Demo
+
+https://zor-clothing.onrender.com
 
 ## Tech Stack
 
 ### Frontend
+
 - React
 - JavaScript
 - Vite
@@ -15,6 +20,7 @@ ZOR is a full-stack contemporary menswear e-commerce web application built as a 
 - Responsive design
 
 ### Backend
+
 - Java 21
 - Spring Boot 4.1.1
 - Spring Web
@@ -23,6 +29,7 @@ ZOR is a full-stack contemporary menswear e-commerce web application built as a 
 - Maven
 
 ### Database
+
 - MySQL 8
 - JPA/Hibernate ORM
 
@@ -30,21 +37,33 @@ ZOR is a full-stack contemporary menswear e-commerce web application built as a 
 
 - Editorial-style responsive homepage
 - Contemporary menswear product catalogue
-- Product categories
+- Product category browsing
 - Product detail pages
-- Search overlay with live product filtering
-- Quick View
+- Search with live product filtering
 - Wishlist
 - Recently viewed products
-- Size selection
+- Product size selection
 - Persistent shopping bag
-- Quantity updates and item removal
+- Cart quantity updates
+- Cart item removal
 - Backend-backed cart persistence
 - Checkout page
 - Customer and delivery details
 - Order creation through REST API
-- Order confirmation page
-- Responsive mobile layout
+- Order confirmation
+- Responsive mobile experience
+
+## Architecture
+
+```text
+React Frontend
+      ↓
+Spring Boot REST API
+      ↓
+Hibernate / JPA
+      ↓
+MySQL Database
+```
 
 ## Main Shopping Flow
 
@@ -75,29 +94,29 @@ Order Confirmation
 ### Products
 
 ```text
-GET    /api/products
-GET    /api/products/{id}
-POST   /api/products
-PUT    /api/products/{id}
-DELETE /api/products/{id}
+GET     /api/products
+GET     /api/products/{id}
+POST    /api/products
+PUT     /api/products/{id}
+DELETE  /api/products/{id}
 ```
 
 ### Cart
 
 ```text
-POST   /api/cart
-GET    /api/cart/{cartId}
-POST   /api/cart/{cartId}/items
-PUT    /api/cart/{cartId}/items/{itemId}
-DELETE /api/cart/{cartId}/items/{itemId}
-DELETE /api/cart/{cartId}
+POST    /api/cart
+GET     /api/cart/{cartId}
+POST    /api/cart/{cartId}/items
+PUT     /api/cart/{cartId}/items/{itemId}
+DELETE  /api/cart/{cartId}/items/{itemId}
+DELETE  /api/cart/{cartId}
 ```
 
 ### Orders
 
 ```text
-POST   /api/orders/from-cart/{cartId}
-GET    /api/orders/{id}
+POST    /api/orders/from-cart/{cartId}
+GET     /api/orders/{id}
 ```
 
 ## Database Entities
@@ -108,7 +127,7 @@ GET    /api/orders/{id}
 - `Order`
 - `OrderItem`
 
-Hibernate/JPA manages the relationships between these entities and MySQL stores the persistent data.
+Hibernate/JPA manages the relationships between these entities, while MySQL stores the persistent application data.
 
 ## Project Structure
 
@@ -148,21 +167,15 @@ zor/
                 └── application.properties
 ```
 
-## Running the Project
+## Running the Project Locally
 
 ### 1. Start MySQL
 
-Make sure MySQL is running and the `zor` database exists.
+Make sure MySQL is running and create a database named `zor`.
 
-### 2. Start the backend
+### 2. Start the Backend
 
-Open a terminal in:
-
-```text
-backend/
-```
-
-Run:
+Open a terminal inside the `backend` directory and run:
 
 ```bash
 mvn spring-boot:run
@@ -174,7 +187,7 @@ The backend runs on:
 http://localhost:8080
 ```
 
-### 3. Start the frontend
+### 3. Start the Frontend
 
 Open another terminal in the project root and run:
 
@@ -203,7 +216,7 @@ Configure the local MySQL username and password in:
 backend/src/main/resources/application.properties
 ```
 
-Do not commit real database passwords or secrets to a public repository. For a production version, these values should be supplied through environment variables.
+Do not commit real database passwords, API keys, or other secrets to a public repository. For production deployments, sensitive configuration should be supplied through environment variables or another secure configuration method.
 
 ## Portfolio Highlights
 
@@ -221,12 +234,13 @@ This project demonstrates:
 - MySQL persistence
 - Responsive UI development
 - End-to-end checkout and order flow
+- Frontend and backend deployment
 
 ## Current Scope
 
 Payment processing is simulated for this portfolio build. Orders are created with a `PENDING` status.
 
-Future production improvements could include:
+Potential future improvements include:
 
 - Real payment gateway integration
 - Authentication and user accounts
@@ -235,7 +249,18 @@ Future production improvements could include:
 - Admin dashboard
 - Product image storage
 - Environment-based configuration
-- Deployment
+
+## Deployment
+
+The application is deployed using Render.
+
+### Frontend
+
+https://zor-clothing.onrender.com
+
+### Backend API
+
+https://zor-1108.onrender.com/api/products
 
 ## Author
 
