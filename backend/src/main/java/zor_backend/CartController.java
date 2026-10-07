@@ -1,10 +1,17 @@
 package zor_backend;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/cart")
-@CrossOrigin(origins = {"http://localhost:5173", "https://zor-clothing.onrender.com"})
+@CrossOrigin(
+    origins = {
+        "http://localhost:5173",
+        "https://zor-clothing.onrender.com"
+    }
+)
 public class CartController {
 
     private final CartRepository cartRepository;
@@ -21,7 +28,12 @@ public class CartController {
     @GetMapping("/{cartId}")
     public Cart getCart(@PathVariable Long cartId) {
         return cartRepository.findById(cartId)
-            .orElseThrow(() -> new RuntimeException("Cart not found"));
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Cart not found"
+                )
+            );
     }
 
     @PostMapping
@@ -36,10 +48,20 @@ public class CartController {
         @RequestBody CartItemRequest request
     ) {
         Cart cart = cartRepository.findById(cartId)
-            .orElseThrow(() -> new RuntimeException("Cart not found"));
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Cart not found"
+                )
+            );
 
         Product product = productRepository.findById(request.productId())
-            .orElseThrow(() -> new RuntimeException("Product not found"));
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Product not found"
+                )
+            );
 
         for (CartItem item : cart.getItems()) {
 
@@ -47,7 +69,10 @@ public class CartController {
                 item.getProduct().getId().equals(product.getId())
                 && item.getSize().equalsIgnoreCase(request.size())
             ) {
-                item.setQuantity(item.getQuantity() + request.quantity());
+                item.setQuantity(
+                    item.getQuantity() + request.quantity()
+                );
+
                 return cartRepository.save(cart);
             }
         }
@@ -70,13 +95,25 @@ public class CartController {
         @RequestBody QuantityRequest request
     ) {
         Cart cart = cartRepository.findById(cartId)
-            .orElseThrow(() -> new RuntimeException("Cart not found"));
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Cart not found"
+                )
+            );
 
         CartItem item = cart.getItems()
             .stream()
-            .filter(cartItem -> cartItem.getId().equals(itemId))
+            .filter(cartItem ->
+                cartItem.getId().equals(itemId)
+            )
             .findFirst()
-            .orElseThrow(() -> new RuntimeException("Cart item not found"));
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Cart item not found"
+                )
+            );
 
         if (request.quantity() <= 0) {
             cart.removeItem(item);
@@ -93,13 +130,25 @@ public class CartController {
         @PathVariable Long itemId
     ) {
         Cart cart = cartRepository.findById(cartId)
-            .orElseThrow(() -> new RuntimeException("Cart not found"));
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Cart not found"
+                )
+            );
 
         CartItem item = cart.getItems()
             .stream()
-            .filter(cartItem -> cartItem.getId().equals(itemId))
+            .filter(cartItem ->
+                cartItem.getId().equals(itemId)
+            )
             .findFirst()
-            .orElseThrow(() -> new RuntimeException("Cart item not found"));
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Cart item not found"
+                )
+            );
 
         cart.removeItem(item);
 
@@ -109,7 +158,12 @@ public class CartController {
     @DeleteMapping("/{cartId}")
     public Cart clearCart(@PathVariable Long cartId) {
         Cart cart = cartRepository.findById(cartId)
-            .orElseThrow(() -> new RuntimeException("Cart not found"));
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Cart not found"
+                )
+            );
 
         cart.getItems().clear();
 
@@ -128,4 +182,3 @@ public class CartController {
     ) {
     }
 }
-
